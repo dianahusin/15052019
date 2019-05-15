@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Angular Application</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.32/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+
+    <script>
+        var app = angular.module("app", []);
+
+        app.controller("employeeController", function ($scope, $http)
+        {
+            //alert("It is working");
+            $scope.getEmployee = function ()
+            {
+                //alert("Function is working");
+                $http.get("/getEmployee", {params:{empid: $scope.empid}}).then(function (response)
+                {
+                    console.log(response.data);
+                    var data = response.data;
+                    if(data[0]!=null)
+                    {
+                        $scope.empid = data[0].empid;
+                        $scope.empname = data[0].empName;
+                        $scope.empsalary = data[0].empSalary;
+
+
+                    }
+                    else
+                    {
+                        $scope.idMessage = "Id not found";
+                    }
+
+                });
+            }
+
+            //update employee details
+            $scope.update = function ()
+            {
+                //alert("Function is working");
+                $http.get("/updateEmployee", {params:{empid: $scope.empid}}).then(function (response)
+                {
+                    console.log(response.data);
+                    var data = response.data;
+                    if(data.affectedRows)
+                    {
+                        
+                        $scope.updateMessage = "Data is updated.";
+
+
+                    }
+                    else
+                    {
+                        $scope.updateMessage = "Data is not updated.";
+                    } 
+
+                });
+            }
+
+            
+        });
+    </script>
+</head>
+<body ng-app="app">
+    <div ng-controller="employeeController">
+
+        <input type="text" ng-model="empid" ng-blur="getEmployee()" placeholder="Employee ID"> {{idMessage}} <br><br>
+        <input type="text" ng-model="empname" placeholder="Employee Name"><br><br>
+        <input type="text" ng-model="empsalary" placeholder="Employee Salary"><br><br>
+
+        <button ng-click="update()">Update</button><br><br>
+        {{updateMessage}}
+    </div>
+    
+</body>
+</html>
